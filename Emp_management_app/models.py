@@ -38,7 +38,7 @@ class Employee(models.Model):
     # designation = models.ForeignKey(Designation, on_delete=models.CASCADE)
     mobile_no = models.CharField(max_length=12)
     designation = models.CharField(max_length=500)
-    department = models.CharField(choices=DEPARTMENT_CHOICES)
+    department = models.CharField(choices=DEPARTMENT_CHOICES,max_length = 25)
     address = models.TextField()
     date_of_birth = models.DateField()
     education = models.TextField()
@@ -67,12 +67,12 @@ class Leave(models.Model):
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     leave_Title = models.CharField(max_length=500)
-    leave_type = models.CharField(choices=LEAVE_TYPE)
+    leave_type = models.CharField(choices=LEAVE_TYPE, max_length = 10)
     leave_from = models.DateField()
     leave_to = models.DateField()
     no_of_days = models.CharField(max_length=12)
-    status =models.CharField(choices=STATUS)
-    halfday = models.CharField(choices=HALF_DAY)
+    status =models.CharField(choices=STATUS, max_length = 25)
+    halfday = models.CharField(choices=HALF_DAY, max_length = 5)
     reason = models.TextField()
     note= models.TextField()
     apply_at = models.DateTimeField(auto_now_add=True)
@@ -81,12 +81,14 @@ class Leave(models.Model):
         return f'{self.leave_Title}'    
     
 class Attendance(models.Model):
+    STATUS = [('Present', 'Present'), ('Absent', 'Absent')]
+    
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     check_in = models.DateTimeField()
     break_time = models.DateTimeField(null=True, blank=True)
     check_out = models.DateTimeField(null=True, blank=True)
     total_hours = models.FloatField(null=True, blank=True)
-    status = models.CharField(max_length=10, choices=[('Present', 'Present'), ('Absent', 'Absent')])
+    status = models.CharField(choices=STATUS, max_length = 10)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):

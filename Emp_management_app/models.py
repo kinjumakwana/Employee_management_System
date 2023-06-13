@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
 # class Department(models.Model):
@@ -74,11 +77,19 @@ class Leave(models.Model):
     status =models.CharField(choices=STATUS, max_length = 25)
     halfday = models.CharField(choices=HALF_DAY, max_length = 5)
     reason = models.TextField()
-    note= models.TextField()
+    note= models.TextField(null=True, blank=True)
     apply_at = models.DateTimeField(auto_now_add=True)
 
+    def clean(self):
+        if self.leave_from and self.leave_to:
+            if self.leave_from > self.leave_to:
+                raise ValidationError("Leave 'from' date must be before the 'to' date.")
+
+            delta = self.leave_to - self.leave_from
+            self.no_of_days = str(delta.days + 1)
+            
     def __str__(self):
-        return f'{self.leave_Title}'    
+        return f'{self.employee}'    
     
 class Attendance(models.Model):
     STATUS = [('Present', 'Present'), ('Absent', 'Absent')]
@@ -99,10 +110,16 @@ class Attendance(models.Model):
 
         super().save(*args, **kwargs)
         
+    def __str__(self):
+        return f'{self.employee}'
+    
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
-    payslip = models.FileField(upload_to='payslips/')
+    payslip = models.FileField(upload_to='payslips/',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     # Additional fields for the salary
+    
+    def __str__(self):
+        return f'{self.employee}'

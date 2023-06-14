@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 from django.core.exceptions import ValidationError
+from datetime import timedelta
 
 
 # Create your models here.
@@ -52,6 +53,14 @@ class Employee(models.Model):
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'    
 
+class Holiday(models.Model):
+    holiday_name = models.CharField(max_length=500)
+    date = models.DateField()
+    detials = models.TextField()
+    
+    def __str__(self):
+        return f'{self.holiday_name}'    
+    
 class Leave(models.Model):
     HALF_DAY = [
         ('Y', 'Yes'),
@@ -69,6 +78,7 @@ class Leave(models.Model):
     ]
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null= True, blank=True)
     leave_Title = models.CharField(max_length=500)
     leave_type = models.CharField(choices=LEAVE_TYPE, max_length = 10)
     leave_from = models.DateField()
@@ -86,7 +96,20 @@ class Leave(models.Model):
                 raise ValidationError("Leave 'from' date must be before the 'to' date.")
 
             delta = self.leave_to - self.leave_from
-            self.no_of_days = str(delta.days + 1)
+            # Deduct holiday days
+            holiday_days = Holiday.objects.filter(date__range=[self.leave_from, self.leave_to]).count()
+            print("holidays",holiday_days)
+            
+            # get list of all days
+            all_days = (self.leave_from + timedelta(days=x) for x in range((self.leave_to - self.leave_from).days + 1))
+            # print(all_days)
+            # filter business days
+            # weekday from 0 to 4. 0 is monday adn 4 is friday
+            # increase counter in each iteration if it is a weekday
+            count = sum(1 for day in all_days if day.weekday() < 5 and not Holiday.objects.filter(date=day).exists())
+            print('Number of business days is:', count)
+            self.no_of_days = str(count)
+            print("Number of days is",self.no_of_days)
             
     def __str__(self):
         return f'{self.employee}'    
@@ -96,7 +119,8 @@ class Attendance(models.Model):
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     check_in = models.DateTimeField()
-    break_time = models.DateTimeField(null=True, blank=True)
+    break_in_time = models.DateTimeField(null=True, blank=True)
+    break_out_time = models.DateTimeField(null=True, blank=True)
     check_out = models.DateTimeField(null=True, blank=True)
     total_hours = models.FloatField(null=True, blank=True)
     status = models.CharField(choices=STATUS, max_length = 10)
@@ -105,11 +129,20 @@ class Attendance(models.Model):
     def save(self, *args, **kwargs):
         if self.check_in and self.check_out:
             total_time = self.check_out - self.check_in
+
+            # Subtract break time if available
+            if self.break_in_time and self.break_out_time:
+                break_time = self.break_out_time - self.break_in_time
+                total_time -= break_time
+
+            # Make sure total_time is not negative
+            total_time = max(total_time, timedelta())
+        
             total_hours = total_time.total_seconds() / 3600  # Convert seconds to hours
             self.total_hours = round(total_hours, 2)  # Round to two decimal places
 
         super().save(*args, **kwargs)
-        
+    
     def __str__(self):
         return f'{self.employee}'
     

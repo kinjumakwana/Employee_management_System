@@ -4,5 +4,5 @@ from .models import *
 # register all class availavle in models.py file
 # admin.site.register(District),
 # admin.site.register([model for name, model in locals().items() if isinstance(model, type) and issubclass(model, models.Model)])
-myModels = [Employee,Leave,Attendance,Payroll]  # iterable list
+myModels = [Employee,Leave,Attendance,Payroll,Holiday]  # iterable list
 admin.site.register(myModels)

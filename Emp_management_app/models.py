@@ -1,3 +1,4 @@
+import math
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
@@ -63,8 +64,8 @@ class Holiday(models.Model):
     
 class Leave(models.Model):
     HALF_DAY = [
-        ('Y', 'Yes'),
-        ('N', 'No'),
+        ('First', 'First'),
+        ('Second', 'Second'),
     ]
     LEAVE_TYPE = [
         ('Paid', 'Paid'),
@@ -82,34 +83,58 @@ class Leave(models.Model):
     leave_Title = models.CharField(max_length=500)
     leave_type = models.CharField(choices=LEAVE_TYPE, max_length = 10)
     leave_from = models.DateField()
+    halfday_from = models.BooleanField(default=False, blank=True)
+    # halfday_from = models.CharField(choices=HALF_DAY, max_length = 10, blank=True, null= True)
     leave_to = models.DateField()
+    halfday_to = models.BooleanField(default=False, blank=True)
+    # halfday_to = models.CharField(choices=HALF_DAY, max_length = 10, blank=True, null= True)
     no_of_days = models.CharField(max_length=12)
     status =models.CharField(choices=STATUS, max_length = 25)
-    halfday = models.CharField(choices=HALF_DAY, max_length = 5)
     reason = models.TextField()
     note= models.TextField(null=True, blank=True)
     apply_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
+        self.working_hours = 8
         if self.leave_from and self.leave_to:
             if self.leave_from > self.leave_to:
                 raise ValidationError("Leave 'from' date must be before the 'to' date.")
-
-            delta = self.leave_to - self.leave_from
-            # Deduct holiday days
-            holiday_days = Holiday.objects.filter(date__range=[self.leave_from, self.leave_to]).count()
-            print("holidays",holiday_days)
             
-            # get list of all days
-            all_days = (self.leave_from + timedelta(days=x) for x in range((self.leave_to - self.leave_from).days + 1))
-            # print(all_days)
-            # filter business days
-            # weekday from 0 to 4. 0 is monday adn 4 is friday
-            # increase counter in each iteration if it is a weekday
-            count = sum(1 for day in all_days if day.weekday() < 5 and not Holiday.objects.filter(date=day).exists())
-            print('Number of business days is:', count)
-            self.no_of_days = str(count)
-            print("Number of days is",self.no_of_days)
+            if self.leave_from == self.leave_to:
+                # If leave_from and leave_to are the same day
+                if self.halfday_from and self.halfday_to:
+                    raise ValidationError("Please select any one")
+                self.no_of_days = 0.5
+                print("half day is", self.no_of_days)
+            
+            if self.leave_from < self.leave_to:
+                delta = self.leave_to - self.leave_from
+                # Deduct holiday days
+                holiday_days = Holiday.objects.filter(date__range=[self.leave_from, self.leave_to]).count()
+                print("holidays",holiday_days)
+                
+                # get list of all days
+                all_days = (self.leave_from + timedelta(days=x) for x in range((delta.days) + 1))
+                # filter business days
+                # weekday from 0 to 4. 0 is monday adn 4 is friday
+                # increase counter in each iteration if it is a weekday
+                count = sum(1 for day in all_days if day.weekday() < 5 and not Holiday.objects.filter(date=day).exists())
+                print('Number of business days is:', count)
+                
+                if self.halfday_from and self.halfday_to :
+                    # self.halfday = 'Second'
+                    self.no_of_days = count - 1
+                    print("Number of days is",self.no_of_days)
+                    
+                elif self.halfday_from or self.halfday_to :
+                    self.half = self.working_hours/2
+                    print("half day is", self.half) 
+                    self.no_of_days = count - (self.half / self.working_hours)
+                    print("Number of days is",self.no_of_days)
+
+                else:
+                    self.no_of_days = str(count)
+                    print("Number of days is",self.no_of_days)
             
     def __str__(self):
         return f'{self.employee}'    

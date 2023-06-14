@@ -7,6 +7,27 @@
 </head>
 <body>
     <h1> Welcome to Employee Management System</h1>
+    <a href = {% url 'all_employee_list' %} > All employee list </a>
     
+    {% if employee %}
+        {% for emp in employee %}
+            {{emp.user}}
+            {{emp.gender}}
+        {% endfor %}
+    {% endif %}
+
+    {% if employee_detail %}
+            {{employee_detail.user}}
+            {{employee_detail.mobile_no}}
+    {% endif %}
+
+    {% if form_add %}
+        {{form_add.as_p}}
+    {% endif %}
+    
+    {% if form_edit %}
+        {{form_edit.as_p}}
+    {% endif %}
+
 </body>
 </html>

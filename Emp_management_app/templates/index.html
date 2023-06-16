@@ -8,6 +8,7 @@
 <body>
     <h1> Welcome to Employee Management System</h1>
     <a href = {% url 'all_employee_list' %} > All employee list </a>
+    
     <br>
     {% if employee %}
         {% for emp in employee %}
@@ -126,12 +127,13 @@
             {{sal.attendance}}           
             {{sal.salary}}           
         {% endfor %}
-    {% endif %}
-    
-    {% if Emp_salary_details %}
-        {{Emp_salary_details.employee}}
-        {{Emp_salary_details.attendance}}
-        {{Emp_salary_details.salary}}
+        {% endif %}
+        
+        {% if Emp_salary_details %}
+            {{Emp_salary_details.employee}}
+            {{Emp_salary_details.attendance}}
+            {{Emp_salary_details.salary}}
+        <a href = {% url 'generate_payslip' pk=Emp_salary_details.id %} > Payslip </a>
     {% endif %}
 
     {% if form_add_Emp_salary %}

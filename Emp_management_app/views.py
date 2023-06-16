@@ -1,6 +1,12 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from .forms import *
+from django.conf import settings
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles import finders
+
 # Create your views here.
 data = {}
 def index(request):
@@ -257,9 +263,6 @@ def Emp_salary_details(request,pk):
     data['Emp_salary_details'] = Payroll.objects.get(id=pk)
     return render(request,"index.html", data)
 
-def generate_payslip(request,pk):
-    pass
-
 def add_Emp_salary(request,pk):
     if request.method == 'POST':
         form_add_Emp_salary = PayrollForm(request.POST)
@@ -289,3 +292,22 @@ def delete_Emp_salary(request,pk):
     return render(request,'index.html',{'salary':salary})
 
 
+def generate_payslip(request, pk):
+    salary = Payroll.objects.get(id=pk)
+    template_path = 'payslip.html'
+    context = {
+        'salary': salary,
+    }
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="Payslip.pdf"'
+    # find the template and render it.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # create a pdf
+    pisa_status = pisa.CreatePDF(
+        html, dest=response)
+    # if error then show some funy view
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return response

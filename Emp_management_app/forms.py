@@ -14,24 +14,24 @@ class HolidayForm(forms.ModelForm):
 class LeaveForm(forms.ModelForm):
     class Meta:
         model = Leave
-        fields = ['employee','holiday','leave_Title','leave_type','leave_from','halfday_from','leave_to','halfday_to','no_of_days','status','reason','note']
+        fields = ['employee','leave_Title','leave_from','second_half','leave_to','first_half','no_of_days','status','reason','note']
 
 class LeaveBalanceForm(forms.ModelForm):
     class Meta:
-        model = Leave_Balance
+        model = Emp_Total_Leave
         fields = ['employee','year','leave']
 
 class LeaveYearlyForm(forms.ModelForm):
     class Meta:
         model = Leave_yearly        
-        fields = ['employee','year','total_leave']
+        fields = ['year','total_leave']
 
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance
-        fields = ['employee','check_in','break_in_time','break_out_time','check_out','total_hours','status']
+        fields = ['employee','check_in','break_in_time','break_out_time','check_out','total_hours']
 
 class PayrollForm(forms.ModelForm):
     class Meta:
         model = Payroll
-        fields = ['employee','attendance','salary','payslip']
+        fields = ['employee','salary','payslip']

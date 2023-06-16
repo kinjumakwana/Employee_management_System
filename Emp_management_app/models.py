@@ -67,10 +67,10 @@ class Leave(models.Model):
         ('First', 'First'),
         ('Second', 'Second'),
     ]
-    LEAVE_TYPE = [
-        ('Paid', 'Paid'),
-        ('Unpaid', 'Unpaid'),
-    ]
+    # LEAVE_TYPE = [
+    #     ('Paid', 'Paid'),
+    #     ('Unpaid', 'Unpaid'),
+    # ]
     STATUS = [
         ('Approved','Approved'),
         ('Rejected','Rejected'),
@@ -78,14 +78,14 @@ class Leave(models.Model):
     ]
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null= True, blank=True)
+    # holiday = models.ForeignKey(Holiday, on_delete=models.SET_NULL, null= True, blank=True)
     leave_Title = models.CharField(max_length=500)
-    leave_type = models.CharField(choices=LEAVE_TYPE, max_length = 10)
+    # leave_type = models.CharField(choices=LEAVE_TYPE, max_length = 10)
     leave_from = models.DateField()
-    halfday_from = models.BooleanField(default=False, blank=True)
+    second_half = models.BooleanField(default=False, blank=True)
     # halfday_from = models.CharField(choices=HALF_DAY, max_length = 10, blank=True, null= True)
     leave_to = models.DateField()
-    halfday_to = models.BooleanField(default=False, blank=True)
+    first_half = models.BooleanField(default=False, blank=True)
     # halfday_to = models.CharField(choices=HALF_DAY, max_length = 10, blank=True, null= True)
     no_of_days = models.CharField(max_length=12)
     status =models.CharField(choices=STATUS, max_length = 25)
@@ -101,7 +101,7 @@ class Leave(models.Model):
             
             if self.leave_from == self.leave_to:
                 # If leave_from and leave_to are the same day
-                if self.halfday_from and self.halfday_to:
+                if self.second_half and self.first_half:
                     raise ValidationError("Please select any one")
                 self.no_of_days = 0.5
                 print("half day is", self.no_of_days)
@@ -120,12 +120,12 @@ class Leave(models.Model):
                 count = sum(1 for day in all_days if day.weekday() < 5 and not Holiday.objects.filter(date=day).exists())
                 print('Number of business days is:', count)
                 
-                if self.halfday_from and self.halfday_to :
+                if self.second_half and self.first_half :
                     # self.halfday = 'Second'
                     self.no_of_days = count - 1
                     print("Number of days is",self.no_of_days)
                     
-                elif self.halfday_from or self.halfday_to :
+                elif self.second_half or self.first_half :
                     self.half = self.working_hours/2
                     print("half day is", self.half) 
                     self.no_of_days = count - (self.half / self.working_hours)
@@ -147,7 +147,7 @@ class Attendance(models.Model):
     break_out_time = models.DateTimeField(null=True, blank=True)
     check_out = models.DateTimeField(null=True, blank=True)
     total_hours = models.FloatField(null=True, blank=True)
-    status = models.CharField(choices=STATUS, max_length = 10)
+    # status = models.CharField(choices=STATUS, max_length = 10)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):
@@ -172,7 +172,7 @@ class Attendance(models.Model):
     
 class Payroll(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
+    # attendance = models.ForeignKey(Attendance, on_delete=models.CASCADE)
     salary = models.DecimalField(max_digits=10, decimal_places=2)
     payslip = models.FileField(upload_to='payslips/',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -181,7 +181,7 @@ class Payroll(models.Model):
     def __str__(self):
         return f'{self.employee}'
     
-class Leave_Balance(models.Model):
+class Emp_Total_Leave(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     year = models.IntegerField()
     leave = models.IntegerField()
@@ -191,7 +191,7 @@ class Leave_Balance(models.Model):
         return f'{self.employee}'
     
 class Leave_yearly(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    # employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     year = models.IntegerField()
     total_leave = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)

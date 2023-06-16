@@ -179,11 +179,11 @@ def delete_leave(request,pk):
     return render(request,'index.html',{'leave':leave})
 
 def leave_balance_list(request):
-    data['leave_balance'] = Leave_Balance.objects.all()
+    data['leave_balance'] = Emp_Total_Leave.objects.all()
     return render(request,"index.html",data)
 
 def Emp_leave_balance_details(request,pk):
-    data['Emp_leave_balance_details'] = Leave_Balance.objects.get(id=pk)
+    data['Emp_leave_balance_details'] = Emp_Total_Leave.objects.get(id=pk)
     return render(request,"index.html", data)
 
 def leave_balance_add(request):
@@ -198,7 +198,7 @@ def leave_balance_add(request):
 
 
 def leave_balance_edit(request, pk):
-    leave_balance = get_object_or_404(Leave_Balance, pk=pk)
+    leave_balance = get_object_or_404(Emp_Total_Leave, pk=pk)
     if request.method == 'POST':
         form_balance_edit = LeaveBalanceForm(request.POST, instance=leave_balance)
         if form_balance_edit.is_valid():
@@ -209,7 +209,7 @@ def leave_balance_edit(request, pk):
     return render(request,'index.html',{'form_balance_edit':form_balance_edit})
 
 def leave_balance_delete(request, pk):
-    leave_balance = get_object_or_404(Leave_Balance, pk=pk)
+    leave_balance = get_object_or_404(Emp_Total_Leave, pk=pk)
     if request.method == 'POST':
         leave_balance.delete()
         return redirect('leave_balance_list')
@@ -217,7 +217,7 @@ def leave_balance_delete(request, pk):
 
 ### Leave_yearly
 def Leave_yearly_list(request):
-    data['Leave_yearly_list'] = Leave_Balance.objects.all()
+    data['Leave_yearly_list'] = Emp_Total_Leave.objects.all()
     return render(request,"index.html", data)
 
 def Leave_year_add(request):

@@ -83,6 +83,11 @@
         {{Emp_leave_details.leave_Title}}
     {% endif %}
     
+    {% if Emp_leave_balance_details %}
+        {{Emp_leave_balance_details.employee}}
+        {{Emp_leave_balance_details.year}}
+    {% endif %}
+    
     {% if form_add_leave %}
         {{form_add_leave.as_p}}
     {% endif %}
@@ -98,7 +103,22 @@
     {% if form_balance_edit %}
         {{form_balance_edit.as_p}}
     {% endif %}
-
+    
+    {% if Leave_yearly_list %}
+        {% for leave_year in Leave_yearly_list %}
+            {{leave_year.employee}}           
+            {{leave_year.year}}           
+        {% endfor %}
+    {% endif %}
+    
+    {% if form_year_add %}
+    {{form_year_add.as_p}}
+    {% endif %}
+    
+    {% if form_year_edit %}
+        {{form_year_edit.as_p}}
+    {% endif %}
+    
     
     {% if salary %}
         {% for sal in salary %}

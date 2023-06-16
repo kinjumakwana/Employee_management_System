@@ -183,7 +183,7 @@ class Payroll(models.Model):
     
 class Leave_Balance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    year = models.DateField()
+    year = models.IntegerField()
     leave = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -192,7 +192,7 @@ class Leave_Balance(models.Model):
     
 class Leave_yearly(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    year = models.DateField()
+    year = models.IntegerField()
     total_leave = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     

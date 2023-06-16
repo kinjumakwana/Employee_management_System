@@ -37,6 +37,12 @@ urlpatterns = [
     path('leave_balance_delete/<int:pk>/', leave_balance_delete, name='leave_balance_delete'),
     path('Emp_leave_balance_details/<int:pk>/', Emp_leave_balance_details, name='Emp_leave_balance_details'),
     
+    ### Leave_yearly
+    path('Leave_yearly_list', Leave_yearly_list, name='Leave_yearly_list'),
+    path('Leave_year_add/', Leave_year_add, name='Leave_year_add'),
+    path('Leave_year_edit/<int:pk>/', Leave_year_edit, name='Leave_year_edit'),
+    path('Leave_year_delete/<int:pk>/', Leave_year_delete, name='Leave_year_delete'),
+    
     ## payroll ###     
     path('Emp_salary_list', Emp_salary_list, name='Emp_salary_list'),
     path('Emp_salary_details/<int:pk>/', Emp_salary_details, name='Emp_salary_details'),

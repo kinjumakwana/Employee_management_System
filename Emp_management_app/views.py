@@ -182,6 +182,10 @@ def leave_balance_list(request):
     data['leave_balance'] = Leave_Balance.objects.all()
     return render(request,"index.html",data)
 
+def Emp_leave_balance_details(request,pk):
+    data['Emp_leave_balance_details'] = Leave_Balance.objects.get(id=pk)
+    return render(request,"index.html", data)
+
 def leave_balance_add(request):
     if request.method == 'POST':
         form_balance_add = LeaveBalanceForm(request.POST)
@@ -191,6 +195,7 @@ def leave_balance_add(request):
     else:
         form_balance_add = LeaveBalanceForm()
     return render(request,'index.html',{'form_balance_add':form_balance_add})
+
 
 def leave_balance_edit(request, pk):
     leave_balance = get_object_or_404(Leave_Balance, pk=pk)
@@ -210,8 +215,38 @@ def leave_balance_delete(request, pk):
         return redirect('leave_balance_list')
     return render(request,'index.html',{'leave_balance':leave_balance})
 
-def Emp_leave_balance_details(request,pk):
-    pass
+### Leave_yearly
+def Leave_yearly_list(request):
+    data['Leave_yearly_list'] = Leave_Balance.objects.all()
+    return render(request,"index.html", data)
+
+def Leave_year_add(request):
+    if request.method == 'POST':
+        form_year_add = LeaveYearlyForm(request.POST)
+        if form_year_add.is_valid():
+            form_year_add.save()
+            return redirect('Leave_yearly_list')
+    else:
+        form_year_add = LeaveBalanceForm()
+    return render(request,'index.html',{'form_year_add':form_year_add})
+
+def Leave_year_edit(request, pk):
+    leave_year = get_object_or_404(Leave_yearly, pk=pk)
+    if request.method == 'POST':
+        form_year_edit = LeaveYearlyForm(request.POST, instance=leave_year)
+        if form_year_edit.is_valid():
+            form_year_edit.save()
+            return redirect('Leave_yearly_list')
+    else:
+        form_year_edit = LeaveBalanceForm(instance=leave_year)
+    return render(request,'index.html',{'form_year_edit':form_year_edit})
+
+def Leave_year_delete(request, pk):
+    leave_year = get_object_or_404(Leave_yearly, pk=pk)
+    if request.method == 'POST':
+        leave_year.delete()
+        return redirect('Leave_yearly_list')
+    return render(request,'index.html',{'Leave_yearly_list':Leave_yearly_list})
 
 #### Payroll ### 
 def Emp_salary_list(request):

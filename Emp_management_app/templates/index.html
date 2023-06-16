@@ -8,7 +8,7 @@
 <body>
     <h1> Welcome to Employee Management System</h1>
     <a href = {% url 'all_employee_list' %} > All employee list </a>
-    
+    <br>
     {% if employee %}
         {% for emp in employee %}
             {{emp.user}}
@@ -17,8 +17,8 @@
     {% endif %}
 
     {% if employee_detail %}
-            {{employee_detail.user}}
-            {{employee_detail.mobile_no}}
+        {{employee_detail.user}}
+        {{employee_detail.mobile_no}}
     {% endif %}
 
     {% if form_add %}
@@ -28,6 +28,100 @@
     {% if form_edit %}
         {{form_edit.as_p}}
     {% endif %}
+
+    {% if holiday %}
+        {% for holi in holiday %}
+            {{holi.date}}           
+        {% endfor %}
+    {% endif %}
+
+    {% if form_add_holiday %}
+        {{form_add_holiday.as_p}}
+    {% endif %}
+    
+    {% if form_edit_holiday %}
+        {{form_edit_holiday.as_p}}
+    {% endif %}
+
+
+    {% if attendence %}
+        {% for atten in attendence %}
+            {{atten.employee}}           
+            {{atten.check_in}}           
+        {% endfor %}
+    {% endif %}
+
+    {% if Emp_attendace_details %}
+        {{Emp_attendace_details.employee}}
+        {{Emp_attendace_details.check_in}}
+    {% endif %}
+
+    {% if form_add_attendace %}
+        {{form_add_attendace.as_p}}
+    {% endif %}
+    
+    {% if form_edit_attendace %}
+        {{form_edit_attendace.as_p}}
+    {% endif %}
+    
+    {% if leave %}
+        {% for leav in leave %}
+            {{leav.employee}}           
+            {{leav.leave_Title}}           
+        {% endfor %}
+    {% endif %}
+    
+    {% if leave_balance %}
+        {% for leav_b in leave_balance %}
+            {{leav_b.employee}}           
+            {{leav_b.Total}}           
+        {% endfor %}
+    {% endif %}
+    
+    {% if Emp_leave_details %}
+        {{Emp_leave_details.employee}}
+        {{Emp_leave_details.leave_Title}}
+    {% endif %}
+    
+    {% if form_add_leave %}
+        {{form_add_leave.as_p}}
+    {% endif %}
+
+    {% if form_balance_add %}
+        {{form_balance_add.as_p}}
+    {% endif %}
+    
+    {% if form_edit_leave %}
+        {{form_edit_leave.as_p}}
+    {% endif %}
+
+    {% if form_balance_edit %}
+        {{form_balance_edit.as_p}}
+    {% endif %}
+
+    
+    {% if salary %}
+        {% for sal in salary %}
+            {{sal.employee}}           
+            {{sal.attendance}}           
+            {{sal.salary}}           
+        {% endfor %}
+    {% endif %}
+    
+    {% if Emp_salary_details %}
+        {{Emp_salary_details.employee}}
+        {{Emp_salary_details.attendance}}
+        {{Emp_salary_details.salary}}
+    {% endif %}
+
+    {% if form_add_Emp_salary %}
+        {{form_add_Emp_salary.as_p}}
+    {% endif %}
+    
+    {% if form_edit_Emp_salary %}
+        {{form_edit_Emp_salary.as_p}}
+    {% endif %}
+
 
 </body>
 </html>

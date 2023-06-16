@@ -69,3 +69,188 @@ def employee_delete(request,pk):
         return redirect('employee_list')
     return render(request, 'index.html', {'employee': employee})
 
+###### Holiday ##### 
+
+def holiday_list(request):
+    data['holiday'] = Holiday.objects.all()
+    return render(request,"index.html",data)
+
+def add_holiday(request):
+    if request.method == 'POST':
+        form_add_holiday = HolidayForm(request.POST)
+        if form_add_holiday.is_valid():
+            form_add_holiday.save()
+            return redirect('holiday_list')
+    else:
+        form_add_holiday = HolidayForm()
+    return render(request, 'index.html', {'form_add_holiday': form_add_holiday})
+
+def edit_holiday(request,pk):
+    holiday = get_object_or_404(Holiday, pk=pk)
+    if request.method == 'POST':
+        form_edit_holiday = HolidayForm(request.POST, instance=holiday)
+        if form_edit_holiday.is_valid():
+            form_edit_holiday.save()
+            return redirect('holiday_list')
+    else:
+        form_edit_holiday = HolidayForm(instance=holiday)
+    return render(request, 'index.html', {'form_edit_holiday': form_edit_holiday})
+
+def delete_holiday(request,pk):
+    holiday = get_object_or_404(Holiday, pk=pk)
+    if request.method == 'POST':
+        holiday.delete()
+        return redirect('holiday_list')
+    return render(request, 'index.html', {'holiday': holiday})
+
+####  Attendence ####
+def attendence_list(request):
+    data['attendence'] = Attendance.objects.all()
+    return render(request,"index.html",data)
+
+def Emp_attendace_details(request,pk):
+    data['Emp_attendace_details'] = Attendance.objects.get(id=pk)
+    return render(request,"index.html", data)
+
+def add_attendace(request,pk):
+    if request.method == 'POST':
+        form_add_attendace = AttendanceForm(request.POST)
+        if form_add_attendace.is_valid():
+            form_add_attendace.save()
+            return redirect('attendence_list')
+    else:
+        form_add_attendace = AttendanceForm()
+    return render(request,'index.html',{'form_add_attendace':form_add_attendace})
+
+def edit_attendace(request,pk):
+    attendence = get_object_or_404(Attendance,pk=pk)
+    if request.method == 'POST':
+        form_edit_attendace = AttendanceForm(request.POST, instance=attendence)
+        if form_edit_attendace.is_valid():
+            form_edit_attendace.save()
+            return redirect("attendence_list")
+    else:
+        form_edit_attendace = AttendanceForm(instance=attendence)
+    return render(request,'index.html',{'form_edit_attendace':form_edit_attendace})
+
+def delete_attendace(request,pk):
+    attendence = get_object_or_404(Attendance,pk=pk)
+    if request.method == 'POST':
+        attendence.delete()
+        return redirect('attendence_list')
+    return render(request, 'index.html', {'attendence': attendence})
+
+## leave ### 
+
+def leave_list(request):
+    data['leave'] = Leave.objects.all()
+    return render(request,"index.html",data)
+
+def Emp_leave_details(request,pk):
+    data['Emp_leave_details'] = Leave.objects.get(id=pk)
+    return render(request,"index.html", data)
+
+def add_leave(request,pk):
+    if request.method == 'POST':
+        form_add_leave = LeaveForm(request.POST)
+        if form_add_leave.is_valid():
+            form_add_leave.save()
+            return redirect('leave_list')
+    else:
+        form_add_leave = LeaveForm()
+    return render(request,'index.html',{'form_add_leave':form_add_leave})
+
+def edit_leave(request,pk):
+    leave = get_object_or_404(Leave,pk=pk)
+    if request.method == 'POST':
+        form_edit_leave = LeaveForm(request.POST,instance = leave)
+        if form_edit_leave.is_valid():
+            form_edit_leave.save()
+            return redirect('leave_list')
+    else:
+        form_edit_leave = LeaveForm(instance=leave)
+    return render(request,'index.html',{'form_edit_leave':form_edit_leave})
+
+def delete_leave(request,pk):
+    leave = get_object_or_404(Leave,pk=pk)
+    if request.method == 'POST':
+        leave.delete()
+        return redirect('leave_list')
+    return render(request,'index.html',{'leave':leave})
+
+def leave_balance_list(request):
+    data['leave_balance'] = Leave_Balance.objects.all()
+    return render(request,"index.html",data)
+
+def leave_balance_add(request):
+    if request.method == 'POST':
+        form_balance_add = LeaveBalanceForm(request.POST)
+        if form_balance_add.is_valid():
+            form_balance_add.save()
+            return redirect('leave_balance_list')
+    else:
+        form_balance_add = LeaveBalanceForm()
+    return render(request,'index.html',{'form_balance_add':form_balance_add})
+
+def leave_balance_edit(request, pk):
+    leave_balance = get_object_or_404(Leave_Balance, pk=pk)
+    if request.method == 'POST':
+        form_balance_edit = LeaveBalanceForm(request.POST, instance=leave_balance)
+        if form_balance_edit.is_valid():
+            form_balance_edit.save()
+            return redirect('leave_balance_list')
+    else:
+        form_balance_edit = LeaveBalanceForm(instance=leave_balance)
+    return render(request,'index.html',{'form_balance_edit':form_balance_edit})
+
+def leave_balance_delete(request, pk):
+    leave_balance = get_object_or_404(Leave_Balance, pk=pk)
+    if request.method == 'POST':
+        leave_balance.delete()
+        return redirect('leave_balance_list')
+    return render(request,'index.html',{'leave_balance':leave_balance})
+
+def Emp_leave_balance_details(request,pk):
+    pass
+
+#### Payroll ### 
+def Emp_salary_list(request):
+    data['salary'] = Payroll.objects.all()
+    return render(request,"index.html",data)
+
+def Emp_salary_details(request,pk):
+    data['Emp_salary_details'] = Payroll.objects.get(id=pk)
+    return render(request,"index.html", data)
+
+def generate_payslip(request,pk):
+    pass
+
+def add_Emp_salary(request,pk):
+    if request.method == 'POST':
+        form_add_Emp_salary = PayrollForm(request.POST)
+        if form_add_Emp_salary.is_valid():
+            form_add_Emp_salary.save()
+            return redirect('Emp_salary_list')
+    else:
+        form_add_Emp_salary = PayrollForm()
+    return render(request,'index.html',{'form_add_Emp_salary':form_add_Emp_salary})
+
+def edit_Emp_salary(request,pk):
+    salary = get_object_or_404(Payroll,pk=pk)
+    if request.method == 'POST':
+        form_edit_Emp_salary = PayrollForm(request.POST,instance = salary)
+        if form_edit_Emp_salary.is_valid():
+            form_edit_Emp_salary.save()
+            return redirect('Emp_salary_list')
+    else:
+        form_edit_Emp_salary = PayrollForm(instance=salary)
+    return render(request,'index.html',{'form_edit_Emp_salary':form_edit_Emp_salary})
+
+def delete_Emp_salary(request,pk):
+    salary = get_object_or_404(Payroll,pk=pk)
+    if request.method == 'POST':
+        salary.delete()
+        return redirect('Emp_salary_list')
+    return render(request,'index.html',{'salary':salary})
+
+

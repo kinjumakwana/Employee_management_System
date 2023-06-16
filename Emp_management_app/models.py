@@ -72,10 +72,9 @@ class Leave(models.Model):
         ('Unpaid', 'Unpaid'),
     ]
     STATUS = [
-        ('Development','Development'),
-        ('Designing','Designing'),
-        ('Testing','Testing'),
-        ('HR','HR'),
+        ('Approved','Approved'),
+        ('Rejected','Rejected'),
+      
     ]
     
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -178,6 +177,22 @@ class Payroll(models.Model):
     payslip = models.FileField(upload_to='payslips/',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     # Additional fields for the salary
+    
+    def __str__(self):
+        return f'{self.employee}'
+    
+class Leave_Balance(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    Leave = models.ForeignKey(Leave, on_delete=models.CASCADE)
+    Previous_Year = models.IntegerField()
+    Current_Year = models.IntegerField()
+    Total = models.IntegerField()
+    Used = models.IntegerField()
+    Accepted = models.IntegerField()
+    Rejected = models.IntegerField()
+    Expired = models.IntegerField()
+    Carry_Over = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f'{self.employee}'

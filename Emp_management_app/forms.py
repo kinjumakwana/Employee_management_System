@@ -19,7 +19,12 @@ class LeaveForm(forms.ModelForm):
 class LeaveBalanceForm(forms.ModelForm):
     class Meta:
         model = Leave_Balance
-        fields = ['employee','Leave','Previous_Year','Current_Year','Total','Used','Accepted','Rejected','Expired','Carry_Over']
+        fields = ['employee','year','leave']
+
+class LeaveYearlyForm(forms.ModelForm):
+    class Meta:
+        model = Leave_yearly        
+        fields = ['employee','year','total_leave']
 
 class AttendanceForm(forms.ModelForm):
     class Meta:

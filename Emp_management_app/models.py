@@ -183,16 +183,19 @@ class Payroll(models.Model):
     
 class Leave_Balance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    Leave = models.ForeignKey(Leave, on_delete=models.CASCADE)
-    Previous_Year = models.IntegerField()
-    Current_Year = models.IntegerField()
-    Total = models.IntegerField()
-    Used = models.IntegerField()
-    Accepted = models.IntegerField()
-    Rejected = models.IntegerField()
-    Expired = models.IntegerField()
-    Carry_Over = models.IntegerField()
+    year = models.DateField()
+    leave = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f'{self.employee}'
+    
+class Leave_yearly(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    year = models.DateField()
+    total_leave = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.year}'
+    

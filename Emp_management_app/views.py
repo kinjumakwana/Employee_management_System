@@ -22,13 +22,13 @@ class EmployeeList(APIView):
     def get(self, request):
         employees = Employee.objects.all()
         serializer = EmployeeSerializer(employees, many=True)
-        return Response(serializer.data)
-
+        return Response({"Message": "success", "data": serializer.data})
+  
     def post(self, request):
         serializer = EmployeeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"Message": "Add New Employee Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EmployeeDetail(APIView):
@@ -40,18 +40,23 @@ class EmployeeDetail(APIView):
 
     def get(self, request, pk):
         employee = self.get_object(pk)
+        if not employee:
+            return Response(
+                {"Message": "Object with Employee id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = EmployeeSerializer(employee)
         return Response(serializer.data)
 
-    def put(self, request, pk):
+    def put(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
-        serializer = EmployeeSerializer(employee, data=request.data)
+        serializer = EmployeeSerializer(instance = employee, data=request.data, partial = True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({"Message": "Employee Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def patch(self, request, pk):
+    def patch(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
         data = request.data.copy()  # Create a mutable copy of request.data
         data.pop('user', None)  # Remove the 'user' field if it exists
@@ -59,14 +64,361 @@ class EmployeeDetail(APIView):
         serializer = EmployeeSerializer(employee, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response({"Message": "Employee Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, pk):
+    def delete(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
-        employee.delete()
+        if employee:
+            employee.delete()
+            return Response({"Message": "Employee deleted!"},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)
- 
+
+##### Holiday API ########
+class Holidaylist(APIView):
+    def get(self,request):
+        holiday = Holiday.objects.all()
+        serializer = HolidaySerializer(holiday,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = HolidaySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New Holiday Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class HolidayDetail(APIView):    
+    def get_object(request,pk):
+        try:
+            return Holiday.objects.get(pk=pk)
+        except Holiday.DoesNotExist:
+            return Http404
+        
+    def get(self, request, pk):
+        holiday = self.get_object(pk)
+        if not holiday:
+            return Response(
+                {"Message": "Object with Holiday id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = HolidaySerializer(holiday)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        holiday = self.get_object(pk)
+        serializer = HolidaySerializer(instance = holiday, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Holiday Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        holiday = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = HolidaySerializer(holiday, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Holiday Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        holiday = self.get_object(pk)
+        if holiday:
+            holiday.delete()
+            return Response({"Message": "Holiday deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+##### Leave API ########
+class Leavelist(APIView):
+    def get(self,request):
+        leave = Leave.objects.all()
+        serializer = LeaveSerializer(leave,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = LeaveSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New leave Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class LeaveDetail(APIView):  
+    def get_object(request,pk):
+        try:
+            return Leave.objects.get(pk=pk)
+        except Leave.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        leave = self.get_object(pk)
+        if not leave:
+            return Response(
+                {"Message": "Object with Leave id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = LeaveSerializer(leave)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        leave = self.get_object(pk)
+        serializer = LeaveSerializer(instance = leave, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Leave Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        leave = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = LeaveSerializer(leave, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Leave Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        leave = self.get_object(pk)
+        if leave:
+            leave.delete()
+            return Response({"Message": "leave deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+##### Attendance API ########
+class Attendancelist(APIView):
+    def get(self,request):
+        attendance = Attendance.objects.all()
+        serializer = AttendanceSerializer(attendance,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = AttendanceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New Attendance Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class AttendanceDetail(APIView):  
+    def get_object(request,pk):
+        try:
+            return Attendance.objects.get(pk=pk)
+        except Leave.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        attendance = self.get_object(pk)
+        if not attendance:
+            return Response(
+                {"Message": "Object with Attendance id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = AttendanceSerializer(attendance)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        attendance = self.get_object(pk)
+        serializer = AttendanceSerializer(instance = attendance, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Attendance Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        attendance = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = AttendanceSerializer(attendance, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Attendance Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        attendance = self.get_object(pk)
+        if attendance:
+            attendance.delete()
+            return Response({"Message": "Attendance deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+##### Payroll API ########
+
+class Payrolllist(APIView):
+    def get(self,request):
+        payroll = Payroll.objects.all()
+        serializer = PayrollSerializer(payroll,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = PayrollSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New Payroll Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class PayrollDetail(APIView):  
+    def get_object(request,pk):
+        try:
+            return Payroll.objects.get(pk=pk)
+        except Payroll.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        payroll = self.get_object(pk)
+        if not payroll:
+            return Response(
+                {"Message": "Object with Payroll id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = PayrollSerializer(payroll)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        payroll = self.get_object(pk)
+        serializer = PayrollSerializer(instance = payroll, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Payroll Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        payroll = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = PayrollSerializer(payroll, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Payroll Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        payroll = self.get_object(pk)
+        if payroll:
+            payroll.delete()
+            return Response({"Message": "Payroll deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+##### Leave_yearwise API ########
+
+class Leave_yearwiselist(APIView):
+    def get(self,request):
+        payroll = Leave_yearly.objects.all()
+        serializer = Leave_yearlySerializer(payroll,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = Leave_yearlySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New Leave_yearwise Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class Leave_yearwiseDetail(APIView):  
+    def get_object(request,pk):
+        try:
+            return Leave_yearly.objects.get(pk=pk)
+        except Leave_yearly.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        leave_yearly = self.get_object(pk)
+        if not leave_yearly:
+            return Response(
+                {"Message": "Object with Leave_yearwise id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = Leave_yearlySerializer(leave_yearly)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        leave_yearly = self.get_object(pk)
+        serializer = Leave_yearlySerializer(instance = leave_yearly, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Leave_yearwise Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        leave_yearly = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = Leave_yearlySerializer(leave_yearly, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Leave_yearwise Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        leave_yearly = self.get_object(pk)
+        if leave_yearly:
+            leave_yearly.delete()
+            return Response({"Message": "Leave_yearwise deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+##### Emp_Total_Leave API ########
+
+class Emp_Total_Leavelist(APIView):
+    def get(self,request):
+        emp_Total_Leave = Emp_Total_Leave.objects.all()
+        serializer = Emp_Total_LeaveSerializer(emp_Total_Leave,many=True)
+        return Response({"Message": "success", "data": serializer.data})
+    
+    def post(self,request):
+        serializer = Emp_Total_LeaveSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Add New Emp_Total_Leave Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class Emp_Total_LeaveDetail(APIView):  
+    def get_object(request,pk):
+        try:
+            return Emp_Total_Leave.objects.get(pk=pk)
+        except Emp_Total_Leave.DoesNotExist:
+            return Http404
+    
+    def get(self, request, pk):
+        emp_Total_Leave = self.get_object(pk)
+        if not emp_Total_Leave:
+            return Response(
+                {"Message": "Object with Emp_Total_Leave id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = Emp_Total_LeaveSerializer(emp_Total_Leave)
+        return Response(serializer.data)
+    
+    def put(self,request,pk,*args, **kwargs):
+        emp_Total_Leave = self.get_object(pk)
+        serializer = Emp_Total_LeaveSerializer(instance = emp_Total_Leave, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Emp_Total_Leave Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self,request,pk,*args, **kwargs):
+        emp_Total_Leave = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = Emp_Total_LeaveSerializer(emp_Total_Leave, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Message": "Emp_Total_Leave Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request,pk,*args, **kwargs):
+        emp_Total_Leave = self.get_object(pk)
+        if emp_Total_Leave:
+            emp_Total_Leave.delete()
+            return Response({"Message": "Emp_Total_Leave deleted!"},status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
 ########### Employeee#########
 def all_employee(request):
     employees = Employee.objects.all().values()

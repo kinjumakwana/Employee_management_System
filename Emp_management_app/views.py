@@ -2,20 +2,82 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from .forms import *
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles import finders
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import *
+
 
 # Create your views here.
 data = {}
 def index(request):
     return render(request,"index.html")
 
+ ## Employee API #####
+class EmployeeList(APIView):
+    def get(self, request):
+        employees = Employee.objects.all()
+        serializer = EmployeeSerializer(employees, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = EmployeeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EmployeeDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Employee.objects.get(pk=pk)
+        except Employee.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        employee = self.get_object(pk)
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        employee = self.get_object(pk)
+        serializer = EmployeeSerializer(employee, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        employee = self.get_object(pk)
+        data = request.data.copy()  # Create a mutable copy of request.data
+        data.pop('user', None)  # Remove the 'user' field if it exists
+
+        serializer = EmployeeSerializer(employee, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        employee = self.get_object(pk)
+        employee.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+ 
 ########### Employeee#########
+def all_employee(request):
+    employees = Employee.objects.all().values()
+    return JsonResponse({'data': list(employees)})
+
 def all_employee_list(request):
-    data['employee'] = Employee.objects.all()
-    return render(request,"index.html", data)
+    employees = Employee.objects.all().values()
+    return JsonResponse(list(employees), safe=False)
+
+    # data['employee'] = Employee.objects.all()
+    # return render(request,"employee.html", data)
 
 def show_employee(request,pk):
     data['employee_detail'] = Employee.objects.get(id=pk)

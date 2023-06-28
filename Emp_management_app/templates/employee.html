@@ -1,0 +1,28 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Include CSS file -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@swimlane/ngx-datatable/release/index.css">
+</head>
+<body>
+    <div>
+        <app-employee-list></app-employee-list>
+      </div>
+    <table ngx-datatable class="material" [rows]="employee" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'">
+        <ngx-datatable-column name="ID" prop="id"></ngx-datatable-column>
+        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+        <!-- Add more columns as needed -->
+    </table>
+    
+<!-- Include JavaScript files -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@swimlane/ngx-datatable/release/index.js"></script>
+</body>
+</html>

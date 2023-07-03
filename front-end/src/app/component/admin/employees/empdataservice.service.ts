@@ -18,12 +18,12 @@ export class EmpdataserviceService {
     return this.http.get<any>(this.baseUrl + 'employees/');
   }
 
-  addEmployee(employee: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'employees/add/', employee);
-  }
-
   getEmployeeDetails(id: number): Observable<any> {
     return this.http.get<any>(this.baseUrl + 'employees/' + id + '/');
+  }
+
+  addEmployee(employee: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'employees/add/', employee);
   }
 
   updateEmployee(id: number, employee: any): Observable<any> {

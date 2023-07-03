@@ -6,6 +6,10 @@ import { Subject } from 'rxjs';
 import { EmpdataserviceService } from '../employees/empdataservice.service'
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { HttpClient } from '@angular/common/http';
+import { NgModel } from '@angular/forms';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import { PopupComponent } from './popup/popup.component';
 
 
 @Component({
@@ -17,17 +21,30 @@ import { HttpClient } from '@angular/common/http';
 export class EmployeesComponent{
   employees: any[] = [];
   displayedColumns: string[] = [];
+  displayuser:string[]=[];
   newEmployee: any = {};
-  emp_data!: MatTableDataSource<any>;
+  emp_data  = new  MatTableDataSource<any>([]);
   dataSource = new MatTableDataSource<any>([]);
   searchValue!: string;
+  closeResult!:string;
 
 
-  constructor(private employeeService: EmpdataserviceService,private _liveAnnouncer: LiveAnnouncer) { }
+  constructor(private employeeService: EmpdataserviceService,private _liveAnnouncer: LiveAnnouncer, private httClient:HttpClient,private modelService:NgbModal,private dialog:MatDialog) { 
+   this.loademployee();
+  }
+
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  loademployee(){
+      this.employeeService.getEmployees().subscribe(res=>{
+      this.emp_data = res;
+      // this.dataSource =  new MatTableDataSource<Customer>(this.emp_data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      });
+  }
  
   announceSortChange(sortState: Sort) {
     if (sortState.direction) {
@@ -52,13 +69,46 @@ export class EmployeesComponent{
 
         // Extract field names from filteredData
         if (this.emp_data.filteredData.length > 0) {
-          this.displayedColumns = Object.keys(this.emp_data.filteredData[0]);
-          console.log(this.displayedColumns)
-          
-        } else {
-          this.displayedColumns = ['Id', 'Gender', 'Mobile_no', 'Designation', 'Department', 'Address', 'Date_of_birth', 'Education', 'Profile_pic', 'Document', 'created_at', 'user','Action'];
-        }
+          // Get the keys of the first object in filteredData
+        const keys = Object.keys(this.emp_data.filteredData[0]);
+        let modifiedUserKeys: string[] = [];
 
+        // Check if 'user' field exists and extract its keys
+        if (keys.includes('user')) {
+        //   modifiedUserKeys = Object.keys(this.emp_data.filteredData[0].user)
+        //     .map(key => key === 'id' ? 'User_id' : key);
+        //   console.log(modifiedUserKeys);
+
+        //   // Remove 'user' from the displayedColumns array
+        //   this.displayedColumns = this.displayedColumns.filter(column => column !== 'user');
+        // }
+
+        // // Update displayedColumns with modifiedUserKeys and keys
+        // this.displayedColumns = [...modifiedUserKeys, ...keys];
+        // console.log(this.displayedColumns);
+        // } else {
+        //   this.displayedColumns = ['Id', 'Gender', 'Mobile_no', 'Designation', 'Department', 'Address', 'Date_of_birth', 'Education', 'Profile_pic', 'Document', 'created_at', 'User', 'Action'];
+        // }
+          const userKeys = Object.keys(this.emp_data.filteredData[0].user);
+          console.log(userKeys)
+            
+          // Replace 'id' with 'user_id' in userKeys array
+          const modifiedUserKeys = userKeys.map(key => key === 'id' ? 'user_id' : key);
+          console.log(modifiedUserKeys);
+  
+          // Add the user field keys to displayedColumns
+          this.displayedColumns = [...modifiedUserKeys,...keys];
+          this.displayuser = userKeys
+        }
+         else {
+          this.displayedColumns = keys
+        
+        }
+        console.log(this.displayedColumns);
+      } else {
+        this.displayedColumns = ['Id', 'Gender', 'Mobile_no', 'Designation', 'Department', 'Address', 'Date_of_birth', 'Education', 'Profile_pic', 'Document', 'created_at', 'user','Action'];
+      }
+    
          // Add the "actions" column to the displayedColumns array
         this.displayedColumns.push('edit');
         this.displayedColumns.push('delete');
@@ -127,6 +177,25 @@ export class EmployeesComponent{
   applyFilter() {
     const filterValue = this.searchValue.trim().toLowerCase();
     this.dataSource.filter = filterValue;
+  }
+  refreshPage() {
+    window.location.reload();
+  }
+  Openpopup()
+  {
+    var _popup = this.dialog.open(PopupComponent,{
+      width:'60%',
+      enterAnimationDuration: '1000ms',
+      exitAnimationDuration:'1000ms',
+      data:{
+        title:'Add Employee'
+      }
+      
+    })
+    _popup.afterClosed().subscribe(item=>{
+      console.log(item)
+      this.loademployee()
+    })
   }
 
 }

@@ -1,0 +1,53 @@
+<form [formGroup]="emp_add" (ngSubmit)="Save_employee()">
+
+<h1 mat-dialog-title> {{inputdata.title}} </h1>
+<div mat-dialog-content>
+    <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input formControlName="username" matInput>
+    </mat-form-field>
+    
+    <mat-form-field>
+        <mat-label>First_name</mat-label>
+        <input formControlName="first_name" matInput>
+    </mat-form-field>
+    
+    <mat-form-field>
+        <mat-label>Last_name</mat-label>
+        <input formControlName="last_name" matInput>
+    </mat-form-field>
+    
+    <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input formControlName="email" matInput>
+    </mat-form-field>
+
+    <label> Gender </label>
+      <mat-radio-group formControlName="gender">
+        <mat-radio-button value="M">Male</mat-radio-button>
+        <mat-radio-button value="F">Female</mat-radio-button>
+      </mat-radio-group>
+
+    <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input formControlName="address" matInput>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Mobile_no</mat-label>
+        <input formControlName="mobile_no" matInput>
+    </mat-form-field>
+      
+    <mat-form-field>
+        <mat-label>Department</mat-label>
+        <input formControlName="Department" matInput>
+    </mat-form-field>
+
+</div>
+<div mat-dialog-actions>
+    <button mat-raised-button  color="primary" (click)="save()">Save</button>
+    <button (click)="closepopup()" mat-raised-button color="warn"> Close </button>
+    <!-- <button mat-raised-button mat-dialog-close color="accent"> Cancel </button> -->
+</div>
+</form>
+

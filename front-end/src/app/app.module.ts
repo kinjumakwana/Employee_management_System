@@ -26,6 +26,7 @@ import { SpinnerComponent } from './shared/spinner.component';
   declarations: [
     AppComponent,
     SpinnerComponent,
+    
   ],
   imports: [
     CommonModule,

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from .forms import *
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404, HttpResponse, JsonResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
@@ -9,6 +10,8 @@ from django.contrib.staticfiles import finders
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import JSONParser
+from django.http.response import JsonResponse
 from .serializers import *
 
 
@@ -16,6 +19,32 @@ from .serializers import *
 data = {}
 def index(request):
     return render(request,"index.html")
+
+@csrf_exempt
+def EmpApi(request,id=0):
+    if request.method=='GET':
+        student = Employee.objects.all()
+        student_serializer=EmployeeSerializer(student,many=True)
+        return JsonResponse(student_serializer.data,safe=False)
+    elif request.method=='POST':
+        student_data=JSONParser().parse(request)
+        student_serializer=EmployeeSerializer(data=student_data)
+        if student_serializer.is_valid():
+            student_serializer.save()
+            return JsonResponse("Added Successfully",safe=False)
+        return JsonResponse("Failed to Add",safe=False)
+    elif request.method=='PUT':
+        student_data=JSONParser().parse(request)
+        student=Employee.objects.get(id=id)
+        student_serializer=EmployeeSerializer(student,data=student_data)
+        if student_serializer.is_valid():
+            student_serializer.save()
+            return JsonResponse("Updated Successfully",safe=False)
+        return JsonResponse("Failed to Update")
+    elif request.method=='DELETE':
+        student=Employee.objects.get(id=id)
+        student.delete()
+        return JsonResponse("Deleted Successfully",safe=False)
 
  ## Employee API #####
 class EmployeeList(APIView):

@@ -3,6 +3,8 @@ from .views import *
 
 urlpatterns = [
     path('',index,name="index"),
+     path('emp/',EmpApi,name='EmpApi'),
+    path('emp/<int:id>',EmpApi,name='EmpApi'),
     ## Employee API #####
     path('employees/', EmployeeList.as_view(), name='employee_list'),
     path('employees/add/', EmployeeList.as_view(), name='employee_add'),

@@ -8,9 +8,9 @@ import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { HttpClient } from '@angular/common/http';
 import { NgModel } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatDialog, MatDialogConfig, MatDialogModule} from '@angular/material/dialog';
 import { PopupComponent } from './popup/popup.component';
-
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-employees',
@@ -54,8 +54,9 @@ export class EmployeesComponent{
     }
   }
   ngOnInit(): void {
-    
+    this.dataSource = new MatTableDataSource<any>();
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
     this.getEmployees();
 
   }
@@ -104,11 +105,17 @@ export class EmployeesComponent{
           this.displayedColumns = keys
         
         }
-        console.log(this.displayedColumns);
-      } else {
-        this.displayedColumns = ['Id', 'Gender', 'Mobile_no', 'Designation', 'Department', 'Address', 'Date_of_birth', 'Education', 'Profile_pic', 'Document', 'created_at', 'user','Action'];
+      
+      // Filter out the unwanted keys from displayedColumns
+      this.displayedColumns = this.displayedColumns.filter(column =>
+        ['username', 'first_name', 'last_name', 'email', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'edit', 'delete'].includes(column.toLowerCase())
+      );
+        
+      console.log(this.displayedColumns);
+      } 
+    else {
+      this.displayedColumns = ['username', 'first_name', 'last_name', 'email', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'created_at', 'edit', 'delete'];
       }
-    
          // Add the "actions" column to the displayedColumns array
         this.displayedColumns.push('edit');
         this.displayedColumns.push('delete');
@@ -130,7 +137,10 @@ export class EmployeesComponent{
         console.log('New employee added:', response);
         // Refresh the employee list or perform any other necessary actions
         this.getEmployees(); // Refresh the employee list after adding a new employee
+        this.dataSource.data.push(response);
+        this.dataSource._updateChangeSubscription();
         this.newEmployee = {};
+        this.loademployee();
       },
       error => {
         console.log('Error:', error);
@@ -177,19 +187,22 @@ export class EmployeesComponent{
   applyFilter() {
     const filterValue = this.searchValue.trim().toLowerCase();
     this.dataSource.filter = filterValue;
+    console.log(filterValue)
   }
   refreshPage() {
     window.location.reload();
   }
   Openpopup()
   {
+
     var _popup = this.dialog.open(PopupComponent,{
       width:'60%',
       enterAnimationDuration: '1000ms',
       exitAnimationDuration:'1000ms',
       data:{
         title:'Add Employee'
-      }
+      },
+      
       
     })
     _popup.afterClosed().subscribe(item=>{

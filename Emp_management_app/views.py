@@ -54,11 +54,46 @@ class EmployeeList(APIView):
         return Response({"Message": "success", "data": serializer.data})
   
     def post(self, request):
-        serializer = EmployeeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"Message": "Add New Employee Successfully!!","data":serializer.data, 'status':status.HTTP_201_CREATED})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user_data = request.data.copy()
+        # Extract user data from request
+        print(user_data)
+        user_data_dict = {
+            'username': user_data.pop('username')[0],  # Get the first element of the list
+            'first_name': user_data.pop('first_name')[0],
+            'last_name': user_data.pop('last_name')[0],
+            'email': user_data.pop('email')[0],  # Remove surrounding double quotes
+            'password': user_data.pop('password')[0]
+        }
+        # user_data['user'] = user.id
+        
+        employee_data = {
+                'user': user_data_dict,
+                'gender': request.data['gender'],
+                'mobile_no': request.data['mobile_no'],
+                'designation': request.data['designation'],
+                'department': request.data['department'],
+                'address': request.data['address'],
+                'date_of_birth': request.data['date_of_birth'],
+                'education': request.data['education'],
+                'profile_pic': request.FILES.get('profile_pic'),
+                'document': request.FILES.get('document')
+            }
+        print(user_data_dict)
+        print(employee_data)
+        
+        # Create User object
+        user_serializer = UserSerializer(data=user_data_dict)
+        if user_serializer.is_valid():
+            employee_serializer = EmployeeSerializer(data=employee_data)
+            if employee_serializer.is_valid():
+                user = user_serializer.save()
+                employee_serializer.save(user=user)
+                return Response({"Message": "Employee created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"Message": "Employee data validation failed", "errors": employee_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"Message": "User data validation failed", "errors": user_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class EmployeeDetail(APIView):
     def get_object(self, pk):

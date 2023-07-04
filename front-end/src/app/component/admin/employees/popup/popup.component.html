@@ -1,26 +1,36 @@
 <form [formGroup]="emp_add" (ngSubmit)="Save_employee()">
 
 <h1 mat-dialog-title> {{inputdata.title}} </h1>
+
 <div mat-dialog-content>
     <mat-form-field>
         <mat-label>Username</mat-label>
-        <input formControlName="username" matInput>
+        <input formControlName="username" matInput required>
     </mat-form-field>
     
     <mat-form-field>
         <mat-label>First_name</mat-label>
-        <input formControlName="first_name" matInput>
+        <input formControlName="first_name" matInput required>
     </mat-form-field>
     
     <mat-form-field>
         <mat-label>Last_name</mat-label>
-        <input formControlName="last_name" matInput>
+        <input formControlName="last_name" matInput required>
     </mat-form-field>
     
     <mat-form-field>
         <mat-label>Email</mat-label>
-        <input formControlName="email" matInput>
+        <input matInput placeholder="pat@example.com" formControlName="email" required>
+        <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
     </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Enter your password</mat-label>
+        <input matInput formControlName="password" [type]="hide ? 'password' : 'text'">
+        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </button>
+      </mat-form-field>
 
     <label> Gender </label>
       <mat-radio-group formControlName="gender">
@@ -29,19 +39,54 @@
       </mat-radio-group>
 
     <mat-form-field>
-        <mat-label>Address</mat-label>
-        <input formControlName="address" matInput>
+        <mat-label>Mobile_no</mat-label>
+        <input formControlName="mobile_no" matInput required>
     </mat-form-field>
 
     <mat-form-field>
-        <mat-label>Mobile_no</mat-label>
-        <input formControlName="mobile_no" matInput>
+        <mat-label>Designation</mat-label>
+        <input formControlName="designation" matInput required>
+    </mat-form-field>
+     
+    <mat-form-field>
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="department">
+          <mat-option value="Development">Development</mat-option>
+          <mat-option  value="Designing">Designing</mat-option>
+          <mat-option value="Testing">Testing</mat-option>
+          <mat-option value="HR">HR</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Address</mat-label>
+        <textarea formControlName="address" matInput required> </textarea>
+    </mat-form-field>
+    
+    <mat-form-field>
+        <mat-label>Date of Birth </mat-label>
+        <input formControlName="date_of_birth" matInput [matDatepicker]="picker">
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
       
     <mat-form-field>
-        <mat-label>Department</mat-label>
-        <input formControlName="Department" matInput>
+        <mat-label>Eduction</mat-label>
+        <input formControlName="education"  matInput required> 
     </mat-form-field>
+    <h4><mat-label>Profile Pic </mat-label></h4>
+    <input type="file" (change)="onProfilePicSelected($event)" class="file-upload" requiredFileType="image/png">
+
+    <h4><mat-label>Document </mat-label></h4>
+    <input type="file" (change)="onDocumentSelected($event)" class="file-upload" requiredFileType="image/png">
+
+    
+    <!-- <h4><mat-label>Profile Pic </mat-label></h4>
+    <input type="file"  formControlName="profile_Pic"  class="file-upload" requiredFileType="image/png" onchange="console.log(event.target.files)">
+    
+    <h4><mat-label>Document </mat-label></h4>
+    <input type="file" formControlName="document"  class="file-upload" requiredFileType="image/png" onchange="console.log(event.target.files)"> -->
 
 </div>
 <div mat-dialog-actions>

@@ -30,8 +30,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
-
-
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   imports: [
@@ -57,8 +57,8 @@ import { MatRadioModule } from '@angular/material/radio';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatIconModule,
-    
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   declarations: [
     AdminComponent,

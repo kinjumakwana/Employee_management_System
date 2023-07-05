@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ViewChild,  EventEmitter, Output} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatTable, MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatSort, Sort, MatSortModule} from '@angular/material/sort';
 import { Subject } from 'rxjs';
 import { EmpdataserviceService } from '../employees/empdataservice.service'
@@ -36,11 +36,12 @@ export class EmployeesComponent{
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatTable) table!: MatTable<any>;
 
   loademployee(){
       this.employeeService.getEmployees().subscribe(res=>{
       this.emp_data = res;
-      // this.dataSource =  new MatTableDataSource<Customer>(this.emp_data);
+      this.dataSource.data = this.emp_data.filteredData;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       });
@@ -137,10 +138,14 @@ export class EmployeesComponent{
         console.log('New employee added:', response);
         // Refresh the employee list or perform any other necessary actions
         this.getEmployees(); // Refresh the employee list after adding a new employee
+
+        // Update the data source and refresh the table
         this.dataSource.data.push(response);
         this.dataSource._updateChangeSubscription();
+
         this.newEmployee = {};
         this.loademployee();
+        
       },
       error => {
         console.log('Error:', error);
@@ -153,6 +158,10 @@ export class EmployeesComponent{
       response => {
         console.log('Employee details:', response);
         // Use the employee details as needed
+        this.dataSource = new MatTableDataSource<any>(this.emp_data.filteredData);
+        this.dataSource.filter = '';
+        this.dataSource.connect();
+        
       },
       error => {
         console.log('Error:', error);

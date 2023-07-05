@@ -37,7 +37,7 @@ class Employee(models.Model):
         ('Testing','Testing'),
         ('HR','HR'),
     ]
-    user = models.OneToOneField(User, on_delete=models.SET_NULL,null=True,blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     gender = models.CharField(choices=GENDER_CHOICES,max_length=1)
     # department = models.ForeignKey(Department, on_delete=models.CASCADE)
     # designation = models.ForeignKey(Designation, on_delete=models.CASCADE)

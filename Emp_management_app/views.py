@@ -134,6 +134,9 @@ class EmployeeDetail(APIView):
     def delete(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
         if employee:
+            user = employee.user
+            if user:
+                user.delete()  # Delete the associated user
             employee.delete()
             return Response({"Message": "Employee deleted!"},status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)

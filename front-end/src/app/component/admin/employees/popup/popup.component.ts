@@ -28,7 +28,7 @@ export class PopupComponent implements OnInit {
   private ref:MatDialogRef<PopupComponent>, 
   private fb: FormBuilder, 
   private service:EmpdataserviceService){}
-
+    
   ngOnInit(): void {
     this.inputdata=this.data;
     // emp_add = this.fb.group({
@@ -81,7 +81,7 @@ Save_employee()
     // Update the date_of_birth value in the form group
     this.emp_add.patchValue({ date_of_birth: formattedDateOfBirth });
   
-  const formData = new FormData();
+    const formData = new FormData();
 
   // Append form values
   Object.keys(this.emp_add.value).forEach(key => {
@@ -100,6 +100,7 @@ Save_employee()
   this.service.addEmployee(formData).subscribe(res=>{
   console.log('New employee added:', res);
   this.closepopup()
+
   });
 }
 onProfilePicSelected(event: any) {

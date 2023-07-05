@@ -114,23 +114,93 @@ class EmployeeDetail(APIView):
 
     def put(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
-        serializer = EmployeeSerializer(instance = employee, data=request.data, partial = True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"Message": "Employee Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        if not employee:
+            return Response(
+                {"Message": "Object with Employee id does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user_data = request.data.copy()
+        user_data_dict = {
+            'username': user_data.pop('username', employee.user.username),
+            'first_name': user_data.pop('first_name', employee.user.first_name),
+            'last_name': user_data.pop('last_name', employee.user.last_name),
+            'email': user_data.pop('email', employee.user.email),
+            'password': user_data.pop('password', employee.user.password),
+        }
+        
+        employee_data = {
+            'user': user_data_dict,
+            'gender': request.data.get('gender', employee.gender),
+            'mobile_no': request.data.get('mobile_no', employee.mobile_no),
+            'designation': request.data.get('designation', employee.designation),
+            'department': request.data.get('department', employee.department),
+            'address': request.data.get('address', employee.address),
+            'date_of_birth': request.data.get('date_of_birth', employee.date_of_birth),
+            'education': request.data.get('education', employee.education),
+            'profile_pic': request.FILES.get('profile_pic', employee.profile_pic),
+            'document': request.FILES.get('document', employee.document),
+        }
+        
+        user_serializer = UserSerializer(employee.user, data=user_data_dict)
+        if user_serializer.is_valid():
+            employee_serializer = EmployeeSerializer(employee, data=employee_data)
+            if employee_serializer.is_valid():
+                user_serializer.save()
+                employee_serializer.save()
+                return Response({"Message": "Employee updated successfully"})
+            else:
+                return Response({"Message": "Employee data validation failed", "errors": employee_serializer.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"Message": "User data validation failed", "errors": user_serializer.errors},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
     def patch(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
-        data = request.data.copy()  # Create a mutable copy of request.data
-        data.pop('user', None)  # Remove the 'user' field if it exists
+        if not employee:
+            return Response(
+                {"Message": "Object with Employee id does not exist"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        serializer = EmployeeSerializer(employee, data=data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"Message": "Employee Updated!",'data':serializer.data,'status':status.HTTP_200_OK})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        user_data = request.data.copy()
+        user_data_dict = {
+            'username': user_data.pop('username', employee.user.username)[0],
+            'first_name': user_data.pop('first_name', employee.user.first_name)[0],
+            'last_name': user_data.pop('last_name', employee.user.last_name)[0],
+            'email': user_data.pop('email', employee.user.email)[0],
+            'password': user_data.pop('password', employee.user.password)[0],
+        }
+        print("userdata: ", user_data_dict)
+        employee_data = {
+            'user': user_data_dict,
+            'gender': request.data.get('gender', employee.gender),
+            'mobile_no': request.data.get('mobile_no', employee.mobile_no),
+            'designation': request.data.get('designation', employee.designation),
+            'department': request.data.get('department', employee.department),
+            'address': request.data.get('address', employee.address),
+            'date_of_birth': request.data.get('date_of_birth', employee.date_of_birth),
+            'education': request.data.get('education', employee.education),
+            'profile_pic': request.FILES.get('profile_pic', employee.profile_pic),
+            'document': request.FILES.get('document', employee.document),
+        }
+        print("employee_data: ", employee_data)
+        
+        user_serializer = UserSerializer(employee.user, data=user_data_dict, partial=True)
+        if user_serializer.is_valid():
+            employee_serializer = EmployeeSerializer(employee, data=employee_data, partial=True)
+            if employee_serializer.is_valid():
+                user_serializer.save()  
+                employee_serializer.save()
+                return Response({"Message": "Employee updated successfully"})
+            else:
+                return Response({"Message": "Employee data validation failed", "errors": employee_serializer.errors},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"Message": "User data validation failed", "errors": user_serializer.errors},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
     def delete(self, request, pk,*args, **kwargs):
         employee = self.get_object(pk)
         if employee:

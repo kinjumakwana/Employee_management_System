@@ -12,7 +12,7 @@
                     </div>
                     <div class="col-md-6 col-lg-1">
                         <!-- <button mat-raised-button color="primary" (click)="addEmployee(newEmployee) "><i class="bi bi-plus-lg"> Add </i> </button> -->
-                        <button mat-raised-button color="primary" (click)="Openpopup()"><i class="bi bi-plus-lg"></i> </button>
+                        <button mat-raised-button color="primary" (click)="addemployee()"><i class="bi bi-plus-lg"></i> </button>
                     </div>
                     <div class="col-md-6 col-lg-1">
                         <button mat-raised-button color="primary" (click)="refreshPage()"><i class="bi bi-arrow-clockwise"></i> </button>
@@ -46,8 +46,11 @@
                                       <ng-container *ngIf="column === 'email'">
                                         {{ element.user.email }}
                                       </ng-container>
+                                      <ng-container *ngIf="column === 'password'">
+                                        {{ element.user.password }}
+                                      </ng-container>
  
-                                      <ng-container *ngIf="column !== 'User_id' && column !== 'Username' && column !== 'First_name' && column !== 'Last_name' && column !== 'Email'">
+                                      <ng-container *ngIf="column !== 'User_id' && column !== 'Username' && column !== 'First_name' && column !== 'Last_name' && column !== 'Email' && column !== 'Password'">
                                         {{ element[column] }}
                                       </ng-container> 
                                 
@@ -63,7 +66,7 @@
                                    
                                     <!-- <button mat-button color="primary">Edit</button> -->
                                     <ng-container *ngIf="column === 'edit'">
-                                            <button mat-icon-button matTooltip="Click to Edit" class="iconbutton" color="primary" (click)="updateEmployee(element.id, element)">
+                                            <button mat-icon-button matTooltip="Click to Edit" class="iconbutton" color="primary" (click)="updateEmp(element.id)">
                                                 <mat-icon>edit</mat-icon>
                                               </button>
                                     </ng-container>

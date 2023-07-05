@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { EmpdataserviceService } from '../employees/empdataservice.service'
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { HttpClient } from '@angular/common/http';
-import { NgModel } from '@angular/forms';
+import { NgForm, NgModel } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {MatDialog, MatDialogConfig, MatDialogModule} from '@angular/material/dialog';
 import { PopupComponent } from './popup/popup.component';
@@ -28,19 +28,21 @@ export class EmployeesComponent{
   searchValue!: string;
   closeResult!:string;
 
-
-  constructor(private employeeService: EmpdataserviceService,private _liveAnnouncer: LiveAnnouncer, private httClient:HttpClient,private modelService:NgbModal,private dialog:MatDialog) { 
-   this.loademployee();
+  constructor(private employeeService: EmpdataserviceService,
+    private _liveAnnouncer: LiveAnnouncer, 
+    private httClient:HttpClient,
+    private modelService:NgbModal,private dialog:MatDialog) { 
+    this.loademployee();
   }
-
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatTable) table!: MatTable<any>;
-
+  
   loademployee(){
+      console.log("Call Load function")
       this.employeeService.getEmployees().subscribe(res=>{
       this.emp_data = res;
+      this.dataSource = new MatTableDataSource<any>(this.emp_data.data);
       this.dataSource.data = this.emp_data.filteredData;
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -55,9 +57,6 @@ export class EmployeesComponent{
     }
   }
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<any>();
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
     this.getEmployees();
 
   }
@@ -77,20 +76,6 @@ export class EmployeesComponent{
 
         // Check if 'user' field exists and extract its keys
         if (keys.includes('user')) {
-        //   modifiedUserKeys = Object.keys(this.emp_data.filteredData[0].user)
-        //     .map(key => key === 'id' ? 'User_id' : key);
-        //   console.log(modifiedUserKeys);
-
-        //   // Remove 'user' from the displayedColumns array
-        //   this.displayedColumns = this.displayedColumns.filter(column => column !== 'user');
-        // }
-
-        // // Update displayedColumns with modifiedUserKeys and keys
-        // this.displayedColumns = [...modifiedUserKeys, ...keys];
-        // console.log(this.displayedColumns);
-        // } else {
-        //   this.displayedColumns = ['Id', 'Gender', 'Mobile_no', 'Designation', 'Department', 'Address', 'Date_of_birth', 'Education', 'Profile_pic', 'Document', 'created_at', 'User', 'Action'];
-        // }
           const userKeys = Object.keys(this.emp_data.filteredData[0].user);
           console.log(userKeys)
             
@@ -109,13 +94,13 @@ export class EmployeesComponent{
       
       // Filter out the unwanted keys from displayedColumns
       this.displayedColumns = this.displayedColumns.filter(column =>
-        ['username', 'first_name', 'last_name', 'email', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'edit', 'delete'].includes(column.toLowerCase())
+        ['username', 'first_name', 'last_name', 'email','password', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'edit', 'delete'].includes(column.toLowerCase())
       );
         
       console.log(this.displayedColumns);
       } 
     else {
-      this.displayedColumns = ['username', 'first_name', 'last_name', 'email', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'created_at', 'edit', 'delete'];
+      this.displayedColumns = ['username', 'first_name', 'last_name', 'email','password', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'created_at', 'edit', 'delete'];
       }
          // Add the "actions" column to the displayedColumns array
         this.displayedColumns.push('edit');
@@ -138,14 +123,23 @@ export class EmployeesComponent{
         console.log('New employee added:', response);
         // Refresh the employee list or perform any other necessary actions
         this.getEmployees(); // Refresh the employee list after adding a new employee
-
-        // Update the data source and refresh the table
-        this.dataSource.data.push(response);
-        this.dataSource._updateChangeSubscription();
-
-        this.newEmployee = {};
-        this.loademployee();
+        this.refreshTable();
         
+      },
+      error => {
+        console.log('Error:', error);
+      }
+    );
+  }
+
+  addemployee(){
+    this.Openpopup(0, 'Add Employee')
+  }
+  refreshTable(): void {
+    this.employeeService.getEmployees().subscribe(
+      response => {
+        this.dataSource.data = response.data;
+        this.dataSource._updateChangeSubscription();
       },
       error => {
         console.log('Error:', error);
@@ -169,23 +163,34 @@ export class EmployeesComponent{
     );
   }
 
+  updateEmp(id:number)
+  { 
+    console.log(id)
+    this.Openpopup(id,'Edit Employee')
+  }
   updateEmployee(id: number, employee: any): void {
-    this.employeeService.updateEmployee(id, employee).subscribe(
+    console.log(id)
+    console.log(employee)
+    this.employeeService.updateEmployee1(id, employee).subscribe(
       response => {
         console.log('Employee updated:', response);
         // Refresh the employee list or perform any other necessary actions
+        this.getEmployees(); // Refresh the employee list after adding a new employee
+        this.refreshTable();
       },
       error => {
         console.log('Error:', error);
       }
     );
   }
+  
   deleteEmployee(id: number): void {
     if (confirm('Are you sure you want to delete this employee?')) {
       this.employeeService.deleteEmployee(id).subscribe(
         response => {
           console.log('Employee deleted:', response);
           // Refresh the employee list or perform any other necessary actions
+          this.loademployee()
         },
         error => {
           console.log('Error:', error);
@@ -201,7 +206,7 @@ export class EmployeesComponent{
   refreshPage() {
     window.location.reload();
   }
-  Openpopup()
+  Openpopup(id:any,title:any)
   {
 
     var _popup = this.dialog.open(PopupComponent,{
@@ -209,14 +214,15 @@ export class EmployeesComponent{
       enterAnimationDuration: '1000ms',
       exitAnimationDuration:'1000ms',
       data:{
-        title:'Add Employee'
+        title:title,
+        id:id,
       },
       
       
     })
     _popup.afterClosed().subscribe(item=>{
       console.log(item)
-      this.loademployee()
+      this.refreshTable()
     })
   }
 

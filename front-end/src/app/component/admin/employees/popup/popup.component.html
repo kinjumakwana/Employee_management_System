@@ -1,4 +1,4 @@
-<form [formGroup]="emp_add" (ngSubmit)="Save_employee()">
+<form [formGroup]="emp_add" (ngSubmit)="onFormSubmit()">
 
 <h1 mat-dialog-title> {{inputdata.title}} </h1>
 
@@ -69,6 +69,7 @@
         <mat-hint>MM/DD/YYYY</mat-hint>
         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+
     </mat-form-field>
       
     <mat-form-field>
@@ -90,8 +91,14 @@
 
 </div>
 <div mat-dialog-actions>
-    <button mat-raised-button  color="primary" (click)="save()">Save</button>
-    <button (click)="closepopup()" mat-raised-button color="warn"> Close </button>
+    <ng-container *ngIf="isEditMode ; else addemployee" >
+        <button mat-raised-button  color="primary" (click)="update()">Update</button>
+        <button mat-raised-button mat-dialog-close color="accent"> Cancel </button>
+    </ng-container>
+    <ng-template #addemployee>
+        <button mat-raised-button color="primary" (click)="save()">Save</button>
+        <button (click)="closepopup()" mat-raised-button color="warn"> Close </button>
+    </ng-template>
     <!-- <button mat-raised-button mat-dialog-close color="accent"> Cancel </button> -->
 </div>
 </form>

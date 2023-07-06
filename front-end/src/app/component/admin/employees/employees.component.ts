@@ -94,13 +94,13 @@ export class EmployeesComponent{
       
       // Filter out the unwanted keys from displayedColumns
       this.displayedColumns = this.displayedColumns.filter(column =>
-        ['username', 'first_name', 'last_name', 'email','password', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'edit', 'delete'].includes(column.toLowerCase())
+        ['username', 'first_name', 'last_name', 'email','gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'edit', 'delete'].includes(column.toLowerCase())
       );
         
       console.log(this.displayedColumns);
       } 
     else {
-      this.displayedColumns = ['username', 'first_name', 'last_name', 'email','password', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'created_at', 'edit', 'delete'];
+      this.displayedColumns = ['username', 'first_name', 'last_name', 'email', 'gender', 'mobile_no', 'designation', 'department', 'address', 'date_of_birth', 'education', 'profile_pic', 'document', 'created_at', 'edit', 'delete'];
       }
          // Add the "actions" column to the displayedColumns array
         this.displayedColumns.push('edit');
@@ -117,20 +117,20 @@ export class EmployeesComponent{
     );
   }
 
-  addEmployee(employee: any): void {
-    this.employeeService.addEmployee(employee).subscribe(
-      response => {
-        console.log('New employee added:', response);
-        // Refresh the employee list or perform any other necessary actions
-        this.getEmployees(); // Refresh the employee list after adding a new employee
-        this.refreshTable();
+  // addEmployee(employee: any): void {
+  //   this.employeeService.addEmployee(employee).subscribe(
+  //     response => {
+  //       console.log('New employee added:', response);
+  //       // Refresh the employee list or perform any other necessary actions
+  //       this.getEmployees(); // Refresh the employee list after adding a new employee
+  //       this.refreshTable();
         
-      },
-      error => {
-        console.log('Error:', error);
-      }
-    );
-  }
+  //     },
+  //     error => {
+  //       console.log('Error:', error);
+  //     }
+  //   );
+  // }
 
   addemployee(){
     this.Openpopup(0, 'Add Employee')
@@ -190,7 +190,9 @@ export class EmployeesComponent{
         response => {
           console.log('Employee deleted:', response);
           // Refresh the employee list or perform any other necessary actions
-          this.loademployee()
+          this.loademployee();
+          this.refreshTable();
+
         },
         error => {
           console.log('Error:', error);

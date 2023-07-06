@@ -35,13 +35,14 @@ export class PopupComponent implements OnInit {
     this.inputdata=this.data;
     if (this.inputdata.id>0){
       this.setpopupdata(this.inputdata.id)
+    
     }
 
     this.emp_add = this.fb.group({
       username: ['', Validators.required],
       first_name: ['', Validators.required],
       last_name: ['', Validators.required],
-      password: ['', Validators.required],
+      password: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       gender: ['', Validators.required],
       mobile_no: ['', Validators.required],
@@ -71,13 +72,17 @@ export class PopupComponent implements OnInit {
     this.isEditMode = true;
     this.service.getEmployeeDetails(id).subscribe(res=>{
       this.editdata = res;
-      console.log(this.editdata)
+      console.log("edit data",this.editdata)
+      //  Remove 'password' control if it exists
+      if (this.emp_add.get('password')) {
+        this.emp_add.removeControl('password');
+      }
+
       this.emp_add.setValue({
         username:this.editdata.user.username,
         first_name:this.editdata.user.first_name,
         last_name:this.editdata.user.last_name,
         email:this.editdata.user.email,
-        password:this.editdata.user.password,
         gender:this.editdata.gender,
         mobile_no:this.editdata.mobile_no,
         designation:this.editdata.designation,
@@ -110,7 +115,12 @@ export class PopupComponent implements OnInit {
   }
 
   save() 
-  {
+  {     
+        if (this.emp_add.invalid) {
+          // Handle form validation errors
+          console.log('Please fill in all required fields.');
+          return;
+        }
         this.ref.close(this.emp_add.value);
         if (this.emp_add.value.date_of_birth === '') {
           // Handle the case when the date of birth is empty
@@ -144,8 +154,11 @@ export class PopupComponent implements OnInit {
       console.log('New employee added:', res);
       this.closepopup()
 
-
-      });
+      },
+      error => {
+        console.log('Error:', error);
+      }
+      );
 
   }
   update() {

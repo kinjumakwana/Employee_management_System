@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from .forms import *
@@ -82,11 +83,20 @@ class EmployeeList(APIView):
         print(employee_data)
         
         # Create User object
+        if User.objects.filter(username__iexact=user_data_dict['username']).exists():
+            return Response({"Message": "Username already exists"})
+            # raise forms.ValidationError('Username already exists')
+        
         user_serializer = UserSerializer(data=user_data_dict)
         if user_serializer.is_valid():
             employee_serializer = EmployeeSerializer(data=employee_data)
             if employee_serializer.is_valid():
-                user = user_serializer.save()
+                # Create User object
+                try:
+                    user = user_serializer.save()
+                except IntegrityError:
+                    return Response({"Message": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                
                 employee_serializer.save(user=user)
                 return Response({"Message": "Employee created successfully"}, status=status.HTTP_201_CREATED)
             else:
@@ -126,7 +136,7 @@ class EmployeeDetail(APIView):
             'first_name': user_data.pop('first_name', employee.user.first_name),
             'last_name': user_data.pop('last_name', employee.user.last_name),
             'email': user_data.pop('email', employee.user.email),
-            'password': user_data.pop('password', employee.user.password),
+            # 'password': user_data.pop('password', employee.user.password),
         }
         
         employee_data = {
@@ -170,7 +180,7 @@ class EmployeeDetail(APIView):
             'first_name': user_data.pop('first_name', employee.user.first_name)[0],
             'last_name': user_data.pop('last_name', employee.user.last_name)[0],
             'email': user_data.pop('email', employee.user.email)[0],
-            'password': user_data.pop('password', employee.user.password)[0],
+            # 'password': user_data.pop('password', employee.user.password)[0],
         }
         print("userdata: ", user_data_dict)
         employee_data = {

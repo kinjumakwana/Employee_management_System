@@ -46,11 +46,8 @@
                                       <ng-container *ngIf="column === 'email'">
                                         {{ element.user.email }}
                                       </ng-container>
-                                      <ng-container *ngIf="column === 'password'">
-                                        {{ element.user.password }}
-                                      </ng-container>
  
-                                      <ng-container *ngIf="column !== 'User_id' && column !== 'Username' && column !== 'First_name' && column !== 'Last_name' && column !== 'Email' && column !== 'Password'">
+                                      <ng-container *ngIf="column !== 'User_id' && column !== 'Username' && column !== 'First_name' && column !== 'Last_name' && column !== 'Email'">
                                         {{ element[column] }}
                                       </ng-container> 
                                 

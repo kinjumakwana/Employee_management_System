@@ -14,6 +14,7 @@ export class EmpdataserviceService {
     this.dataUpdatedSource.next(data);
   }
   constructor(private http: HttpClient) { }
+  
   getEmployees(): Observable<any> {
     return this.http.get<any>(this.baseUrl + 'employees/');
   }
